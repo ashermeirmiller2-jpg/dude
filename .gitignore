@@ -1,0 +1,53 @@
+```
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+build/
+*.pyc
+__pycache__/
+
+# Vite-specific
+.vite/
+
+# Environment variables
+.env
+.env.local
+.env.*
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Editor-specific
+.vscode/
+.idea/
+
+# Temporary files
+*.tmp
+*.swp
+
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+
+# Package manager lock files
+package-lock.json
+yarn.lock
+
+# Distribution / packaging
+*.tar
+*.zip
+*.gz
+*.rar
+*.7z
+*.deb
+*.rpm
+*.msi
+
+```
