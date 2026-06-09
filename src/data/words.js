@@ -784,11 +784,141 @@ export const WORDS = [
     tier: 2,
     argument_function: null,
     image_url: null
+  },
+  {
+    id: "w061",
+    aramaic: "קָשֶׁה",
+    nikud: "קָשֶׁה",
+    transliteration: "kasheh",
+    definition_primary: "difficult, hard",
+    definition_secondary: "problematic",
+    word_type: "adjective",
+    frequency_rank: 61,
+    tier: 2,
+    argument_function: "objection",
+    image_url: null
+  },
+  {
+    id: "w062",
+    aramaic: "תֵּן",
+    nikud: "תֵּן",
+    transliteration: "ten",
+    definition_primary: "give!",
+    definition_secondary: "grant, allow",
+    word_type: "verb",
+    frequency_rank: 62,
+    tier: 2,
+    argument_function: null,
+    image_url: null
+  },
+  {
+    id: "w063",
+    aramaic: "לְמַאי",
+    nikud: "לְמַאי",
+    transliteration: "lemai",
+    definition_primary: "for what?",
+    definition_secondary: "why, for what purpose",
+    word_type: "phrase",
+    frequency_rank: 63,
+    tier: 2,
+    argument_function: "question",
+    image_url: null
+  },
+  {
+    id: "w064",
+    aramaic: "אִיתְנִי",
+    nikud: "אִיתְנִי",
+    transliteration: "itni",
+    definition_primary: "it was taught",
+    definition_secondary: "we learned",
+    word_type: "verb",
+    frequency_rank: 64,
+    tier: 2,
+    argument_function: "proof",
+    image_url: null
+  },
+  {
+    id: "w065",
+    aramaic: "מִדְּ",
+    nikud: "מִדְּ",
+    transliteration: "midde",
+    definition_primary: "since, because",
+    definition_secondary: "given that",
+    word_type: "connector",
+    frequency_rank: 65,
+    tier: 2,
+    argument_function: null,
+    image_url: null
+  },
+  {
+    id: "w066",
+    aramaic: "שְׁמַע מִינַּהּ",
+    nikud: "שְׁמַע מִינַּהּ",
+    transliteration: "shema minah",
+    definition_primary: "learn from it",
+    definition_secondary: "derive from this",
+    word_type: "phrase",
+    frequency_rank: 66,
+    tier: 2,
+    argument_function: "proof",
+    image_url: null
+  },
+  {
+    id: "w067",
+    aramaic: "אֲמַר לֵיהּ",
+    nikud: "אֲמַר לֵיהּ",
+    transliteration: "amar leih",
+    definition_primary: "he said to him",
+    definition_secondary: "replied to him",
+    word_type: "phrase",
+    frequency_rank: 67,
+    tier: 2,
+    argument_function: "statement",
+    image_url: null
+  },
+  {
+    id: "w068",
+    aramaic: "מַאי בֵּינַיְיהוּ",
+    nikud: "מַאי בֵּינַיְיהוּ",
+    transliteration: "mai beinaihu",
+    definition_primary: "what is between them?",
+    definition_secondary: "what is the practical difference?",
+    word_type: "phrase",
+    frequency_rank: 68,
+    tier: 2,
+    argument_function: "question",
+    image_url: null
+  },
+  {
+    id: "w069",
+    aramaic: "נָמֵי",
+    nikud: "נָמֵי",
+    transliteration: "nami",
+    definition_primary: "also, too",
+    definition_secondary: "likewise",
+    word_type: "particle",
+    frequency_rank: 69,
+    tier: 2,
+    argument_function: null,
+    image_url: null
+  },
+  {
+    id: "w070",
+    aramaic: "גְּמַר",
+    nikud: "גְּמַר",
+    transliteration: "gemar",
+    definition_primary: "he finished, completed",
+    definition_secondary: "learned, studied",
+    word_type: "verb",
+    frequency_rank: 70,
+    tier: 2,
+    argument_function: null,
+    image_url: null
   }
 ];
 
 // Add more words up to 300 - these would be filled in similarly
-// For MVP, we'll start with the first 60 words and expand
+// For MVP, we have 70 words (50 Tier 1 + 20 Tier 2)
 
 export const getWordsByTier = (tier) => {
   return WORDS.filter(w => w.tier === tier);

@@ -1,53 +1,27 @@
 ```
-# Dependencies
-node_modules/
-
-# Build artifacts
-dist/
-build/
+# Compiled and build artifacts
 *.pyc
 __pycache__/
 
-# Vite-specific
-.vite/
-
-# Environment variables
+# Dependencies
+node_modules/
+venv/
+.venv/
 .env
 .env.local
-.env.*
+*.env.*
 
-# Logs
-*.log
-
-# OS generated files
-.DS_Store
-Thumbs.db
-
-# Editor-specific
+# Editors
 .vscode/
 .idea/
 
-# Temporary files
+# Logs and temp files
+*.log
 *.tmp
 *.swp
 
-# Coverage reports
-coverage/
-htmlcov/
-.coverage
-
-# Package manager lock files
-package-lock.json
-yarn.lock
-
-# Distribution / packaging
-*.tar
-*.zip
-*.gz
-*.rar
-*.7z
-*.deb
-*.rpm
-*.msi
-
+# Build directories
+dist/
+build/
+target/
 ```
