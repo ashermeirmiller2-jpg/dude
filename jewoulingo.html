@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jewoulingo - Learn Talmudic Aramaic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --primary:#5B21B6; --primary-light:#7C3AED; --primary-dark:#4C1D95; --success:#10B981; --error:#EF4444; --bg:#FAFAFA; --surface:#FFFFFF; --text:#1F2937; --text-muted:#6B7280; --border:#E5E7EB; --tile-bg:#EEF2FF; --tile-hover:#E0E7FF; }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+    .hebrew { font-family:'Frank Ruhl Libre',serif; direction:rtl; }
+    .app-container { max-width:600px; margin:0 auto; min-height:100vh; background:var(--surface); box-shadow:0 0 20px rgba(0,0,0,0.05); }
+    .header { display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-bottom:1px solid var(--border); position:sticky; top:0; background:var(--surface); z-index:100; }
+    .logo { font-size:24px; font-weight:700; color:var(--primary); text-decoration:none; }
+    .nav-btn { background:none; border:none; font-size:24px; cursor:pointer; padding:8px; border-radius:8px; }
+    .nav-btn:hover { background:var(--tile-bg); }
+    .view { display:none; }
+    .view.active { display:block; }
+    .home-view { padding:24px; }
+    .welcome-card { background:linear-gradient(135deg,var(--primary),var(--primary-dark)); color:white; border-radius:16px; padding:32px 24px; text-align:center; margin-bottom:24px; }
+    .welcome-card h1 { font-size:28px; margin-bottom:8px; }
+    .welcome-card p { opacity:0.9; margin-bottom:24px; }
+    .start-btn { background:white; color:var(--primary); border:none; padding:16px 48px; font-size:18px; font-weight:600; border-radius:12px; cursor:pointer; }
+    .stats-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-bottom:24px; }
+    .stat-card { background:var(--bg); border-radius:12px; padding:20px; text-align:center; }
+    .stat-value { font-size:32px; font-weight:700; color:var(--primary); }
+    .stat-label { font-size:14px; color:var(--text-muted); margin-top:4px; }
+    .menu-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; }
+    .menu-btn { background:var(--bg); border:2px solid var(--border); border-radius:12px; padding:24px 16px; text-align:center; cursor:pointer; }
+    .menu-btn:hover { border-color:var(--primary); background:var(--tile-bg); }
+    .menu-btn-icon { font-size:32px; margin-bottom:8px; }
+    .menu-btn-text { font-weight:600; }
+    .session-view { padding:24px; }
+    .progress-bar { height:8px; background:var(--border); border-radius:4px; margin-bottom:24px; overflow:hidden; }
+    .progress-fill { height:100%; background:var(--success); transition:width 0.3s; }
+    .sentence-display { text-align:center; margin-bottom:32px; }
+    .sentence-aramaic { font-size:32px; line-height:1.6; margin-bottom:12px; }
+    .sentence-translit { font-size:16px; color:var(--text-muted); font-style:italic; }
+    .word-popup { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--surface); border:2px solid var(--primary); border-radius:12px; padding:16px 20px; box-shadow:0 10px 40px rgba(0,0,0,0.2); z-index:1000; max-width:90%; width:400px; display:none; }
+    .word-popup.active { display:block; }
+    .popup-word { font-size:28px; color:var(--primary); margin-bottom:8px; }
+    .popup-translit { font-size:14px; color:var(--text-muted); margin-bottom:4px; }
+    .popup-def { font-size:16px; font-weight:500; }
+    .popup-close { position:absolute; top:8px; right:12px; background:none; border:none; font-size:20px; cursor:pointer; color:var(--text-muted); }
+    .tiles-container { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-bottom:24px; min-height:60px; padding:16px; background:var(--bg); border-radius:12px; }
+    .answer-zone { min-height:120px; border:2px dashed var(--border); border-radius:12px; padding:16px; margin-bottom:24px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; }
+    .answer-zone.correct { border-color:var(--success); background:#ECFDF5; }
+    .answer-zone.incorrect { border-color:var(--error); background:#FEF2F2; }
+    .word-tile { background:var(--tile-bg); border:2px solid var(--primary-light); border-radius:8px; padding:12px 16px; font-size:16px; font-weight:500; cursor:pointer; user-select:none; }
+    .word-tile:hover { background:var(--tile-hover); transform:translateY(-2px); }
+    .word-tile.used { opacity:0.3; pointer-events:none; }
+    .free-type-input { width:100%; padding:16px; font-size:16px; border:2px solid var(--border); border-radius:12px; margin-bottom:16px; font-family:'Inter',sans-serif; resize:vertical; min-height:100px; }
+    .free-type-input:focus { outline:none; border-color:var(--primary); }
+    .predict-hint { background:var(--tile-bg); padding:16px; border-radius:12px; margin-bottom:16px; font-size:14px; color:var(--text-muted); }
+    .check-btn { width:100%; padding:16px; background:var(--primary); color:white; border:none; border-radius:12px; font-size:18px; font-weight:600; cursor:pointer; }
+    .check-btn:hover { background:var(--primary-dark); }
+    .check-btn:disabled { background:var(--text-muted); cursor:not-allowed; }
+    .feedback { padding:20px; border-radius:12px; margin-top:16px; display:none; }
+    .feedback.correct { background:#ECFDF5; display:block; }
+    .feedback.incorrect { background:#FEF2F2; display:block; }
+    .feedback-title { font-size:20px; font-weight:700; margin-bottom:8px; }
+    .feedback-correct { color:var(--success); }
+    .feedback-incorrect { color:var(--error); }
+    .next-btn { width:100%; padding:16px; background:var(--success); color:white; border:none; border-radius:12px; font-size:18px; font-weight:600; cursor:pointer; margin-top:16px; }
+    .library-view { padding:24px; }
+    .search-input { width:100%; padding:12px 16px; font-size:16px; border:2px solid var(--border); border-radius:12px; margin-bottom:20px; }
+    .word-list { display:flex; flex-direction:column; gap:12px; }
+    .word-item { display:flex; justify-content:space-between; align-items:center; padding:16px; background:var(--bg); border-radius:12px; cursor:pointer; }
+    .word-item:hover { background:var(--tile-bg); }
+    .word-item-aramaic { font-size:20px; color:var(--primary); }
+    .word-item-info { flex:1; margin-left:16px; }
+    .word-item-translit { font-size:14px; color:var(--text-muted); }
+    .word-item-def { font-size:14px; font-weight:500; }
+    .state-badge { padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; text-transform:uppercase; }
+    .state-new { background:var(--border); color:var(--text-muted); }
+    .state-learning { background:#FEF3C7; color:#92400E; }
+    .state-review { background:#DBEAFE; color:#1E40AF; }
+    .state-solid { background:#D1FAE5; color:#065F46; }
+    .state-mastered { background:var(--primary); color:white; }
+    .habit-view { padding:24px; }
+    .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:24px; }
+    .calendar-day { aspect-ratio:1; border-radius:4px; background:var(--border); font-size:10px; display:flex; align-items:center; justify-content:center; }
+    .calendar-day.active { background:var(--success); }
+    .calendar-day.today { border:2px solid var(--primary); }
+    .summary-view { padding:24px; text-align:center; }
+    .summary-icon { font-size:64px; margin-bottom:16px; }
+    .summary-title { font-size:28px; font-weight:700; margin-bottom:8px; }
+    .summary-stats { background:var(--bg); border-radius:12px; padding:24px; margin:24px 0; }
+    .summary-stat { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); }
+    .summary-stat:last-child { border-bottom:none; }
+    .mode-selector { display:flex; gap:8px; margin-bottom:24px; }
+    .mode-btn { flex:1; padding:12px; border:2px solid var(--border); background:white; border-radius:8px; font-weight:500; cursor:pointer; }
+    .mode-btn.active { border-color:var(--primary); background:var(--tile-bg); color:var(--primary); }
+    @media(max-width:400px) { .sentence-aramaic{font-size:24px;} .word-tile{padding:10px 12px;font-size:14px;} .stats-grid{grid-template-columns:1fr;} }
+    .clickable-word { cursor:pointer; border-bottom:2px dotted var(--primary-light); }
+    .clickable-word:hover { background:var(--tile-bg); }
+    .hidden { display:none!important; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="header">
+      <a href="#" class="logo hebrew" onclick="app.navigate('home')">ג׳ולingo</a>
+      <button class="nav-btn" onclick="app.navigate('library')">📚</button>
+    </header>
+    <div id="home-view" class="view active home-view">
+      <div class="welcome-card">
+        <h1>Ready to learn?</h1>
+        <p>Master Talmudic Aramaic, one sentence at a time</p>
+        <button class="start-btn" onclick="app.startSession()">Start Session</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-value" id="words-known">0</div><div class="stat-label">Words Known</div></div>
+        <div class="stat-card"><div class="stat-value" id="current-streak">0</div><div class="stat-label">Day Streak</div></div>
+      </div>
+      <div class="menu-grid">
+        <div class="menu-btn" onclick="app.navigate('library')"><div class="menu-btn-icon">📖</div><div class="menu-btn-text">Word Library</div></div>
+        <div class="menu-btn" onclick="app.navigate('habit')"><div class="menu-btn-icon">📅</div><div class="menu-btn-text">Progress</div></div>
+      </div>
+    </div>
+    <div id="session-view" class="view session-view">
+      <div class="progress-bar"><div class="progress-fill" id="session-progress" style="width:0%"></div></div>
+      <div class="mode-selector">
+        <button class="mode-btn active" data-mode="tile" onclick="app.setMode('tile')">Tiles</button>
+        <button class="mode-btn" data-mode="free" onclick="app.setMode('free')">Type</button>
+        <button class="mode-btn" data-mode="predict" onclick="app.setMode('predict')">Predict</button>
+      </div>
+      <div class="sentence-display">
+        <div class="sentence-aramaic hebrew" id="sentence-aramaic"></div>
+        <div class="sentence-translit" id="sentence-translit"></div>
+      </div>
+      <div id="tile-mode">
+        <div class="answer-zone" id="answer-zone"></div>
+        <div class="tiles-container" id="tiles-container"></div>
+      </div>
+      <div id="free-mode" class="hidden"><textarea class="free-type-input" id="free-type-input" placeholder="Type your translation..."></textarea></div>
+      <div id="predict-mode" class="hidden">
+        <div class="predict-hint" id="predict-hint"></div>
+        <textarea class="free-type-input" id="predict-input" placeholder="Type what comes next..."></textarea>
+      </div>
+      <button class="check-btn" id="check-btn" onclick="app.checkAnswer()">Check Answer</button>
+      <div class="feedback" id="feedback">
+        <div class="feedback-title" id="feedback-title"></div>
+        <div id="feedback-content"></div>
+        <button class="next-btn" onclick="app.nextQuestion()">Continue</button>
+      </div>
+    </div>
+    <div id="library-view" class="view library-view">
+      <h2 style="margin-bottom:16px;">Word Library</h2>
+      <input type="text" class="search-input" placeholder="Search words..." oninput="app.filterWords(this.value)">
+      <div class="word-list" id="word-list"></div>
+    </div>
+    <div id="habit-view" class="view habit-view">
+      <h2 style="margin-bottom:16px;">Your Progress</h2>
+      <div class="stat-card" style="margin-bottom:24px;"><div class="stat-value" id="total-sentences">0</div><div class="stat-label">Sentences Completed</div></div>
+      <h3 style="margin-bottom:12px;">Activity Calendar</h3>
+      <div class="calendar-grid" id="calendar-grid"></div>
+      <button class="check-btn" onclick="app.navigate('home')" style="margin-top:24px;">Back to Home</button>
+    </div>
+    <div id="summary-view" class="view summary-view">
+      <div class="summary-icon">🎉</div>
+      <div class="summary-title">Session Complete!</div>
+      <div class="summary-stats">
+        <div class="summary-stat"><span>Words Reviewed</span><strong id="summary-reviewed">0</strong></div>
+        <div class="summary-stat"><span>New Words</span><strong id="summary-new">0</strong></div>
+        <div class="summary-stat"><span>Accuracy</span><strong id="summary-accuracy">0%</strong></div>
+        <div class="summary-stat"><span>XP Earned</span><strong id="summary-xp">0</strong></div>
+      </div>
+      <button class="start-btn" onclick="app.navigate('home')">Continue</button>
+    </div>
+    <div class="word-popup" id="word-popup">
+      <button class="popup-close" onclick="app.closePopup()">×</button>
+      <div class="popup-word hebrew" id="popup-word"></div>
+      <div class="popup-translit" id="popup-translit"></div>
+      <div class="popup-def" id="popup-def"></div>
+    </div>
+  </div>
+  <script>
+    const WORDS = [
+      {id:'w001',aramaic:'אַמַר',transliteration:'amar',definition:'he said',type:'verb',tier:1,state:'new'},
+      {id:'w002',aramaic:'רַב',transliteration:'rav',definition:'Master/Rabbi',type:'noun',tier:1,state:'learning'},
+      {id:'w003',aramaic:'לְ',transliteration:'le',definition:'to/for',type:'particle',tier:1,state:'review'},
+      {id:'w004',aramaic:'מַאי',transliteration:'mai',definition:'what',type:'question',tier:1,state:'solid'},
+      {id:'w005',aramaic:'קָא',transliteration:'ka',definition:'(progressive marker)',type:'particle',tier:1,state:'mastered'},
+      {id:'w006',aramaic:'אָמַר',transliteration:'amar',definition:'said/he says',type:'verb',tier:1,state:'new'},
+      {id:'w007',aramaic:'הֵיכִי',transliteration:'heikhi',definition:'how',type:'question',tier:2,state:'new'},
+      {id:'w008',aramaic:'דְּ',transliteration:'de',definition:'that/of',type:'particle',tier:1,state:'learning'},
+      {id:'w009',aramaic:'אִי',transliteration:'i',definition:'if',type:'connector',tier:1,state:'review'},
+      {id:'w010',aramaic:'לָא',transliteration:'la',definition:'no/not',type:'particle',tier:1,state:'solid'},
+      {id:'w011',aramaic:'אֶלָּא',transliteration:'ella',definition:'rather/but',type:'connector',tier:1,state:'mastered'},
+      {id:'w012',aramaic:'תָּא',transliteration:'ta',definition:'come',type:'verb',tier:2,state:'new'},
+      {id:'w013',aramaic:'שְׁמַע',transliteration:'shema',definition:'hear',type:'verb',tier:2,state:'learning'},
+      {id:'w014',aramaic:'מִנַּיִן',transliteration:'minayin',definition:'from where',type:'question',tier:2,state:'new'},
+      {id:'w015',aramaic:'תְּנוּ',transliteration:'tenu',definition:'teach (pl.)',type:'verb',tier:2,state:'review'},
+      {id:'w016',aramaic:'רַבָּנַן',transliteration:'rabbanan',definition:'Rabbis',type:'noun',tier:2,state:'solid'},
+      {id:'w017',aramaic:'טַעְמָא',transliteration:'tama',definition:'reason',type:'noun',tier:2,state:'mastered'},
+      {id:'w018',aramaic:'הָכִי',transliteration:'hakhi',definition:'thus/so',type:'adverb',tier:2,state:'new'},
+      {id:'w019',aramaic:'אִיתֵיבֵיהּ',transliteration:'iteiveih',definition:'he objected to him',type:'verb',tier:3,state:'new'},
+      {id:'w020',aramaic:'קַשְׁיָא',transliteration:'kashya',definition:'difficulty',type:'noun',tier:2,state:'learning'}
+    ];
+    const SENTENCES = [
+      {id:'s001',aramaic:'אַמַר רַב',translation:'Rav said',transliteration:'Amar Rav',wordIds:['w001','w002'],difficulty:1,sefariaRef:'Berakhot 2a'},
+      {id:'s002',aramaic:'מַאי קָאָמַר',translation:'What is he saying?',transliteration:'Mai ka amar',wordIds:['w004','w005','w001'],difficulty:2,sefariaRef:'Berakhot 3a'},
+      {id:'s003',aramaic:'תָּא שְׁמַע',translation:'Come and hear',transliteration:'Ta shema',wordIds:['w012','w013'],difficulty:1,sefariaRef:'Shabbat 5a'},
+      {id:'s004',aramaic:'לָא קַשְׁיָא',translation:'It is not a difficulty',transliteration:'La kashya',wordIds:['w010','w020'],difficulty:2,sefariaRef:'Eruvin 10a'},
+      {id:'s005',aramaic:'אֶלָּא אָמַר רַב',translation:'Rather, Rav said',transliteration:'Ella amar rav',wordIds:['w011','w006','w002'],difficulty:2,sefariaRef:'Pesachim 15a'},
+      {id:'s006',aramaic:'מַאי טַעְמָא',translation:'What is the reason?',transliteration:'Mai tama',wordIds:['w004','w017'],difficulty:1,sefariaRef:'Yoma 20a'},
+      {id:'s007',aramaic:'הֵיכִי דָּמֵי',translation:'What are the circumstances?',transliteration:'Heikhi dami',wordIds:['w007'],difficulty:2,sefariaRef:'Ketubot 25a'},
+      {id:'s008',aramaic:'תְּנוּ רַבָּנַן',translation:'The Rabbis taught',transliteration:'Tenu rabbanan',wordIds:['w015','w016'],difficulty:1,sefariaRef:'Bava Metzia 30a'},
+      {id:'s009',aramaic:'מִנַּיִן',translation:'From where do we know this?',transliteration:'Minayin',wordIds:['w014'],difficulty:1,sefariaRef:'Menachot 35a'},
+      {id:'s010',aramaic:'אִי אָמַר לְךְ',translation:'If he said to you',transliteration:'I amar lakh',wordIds:['w009','w006','w003'],difficulty:2,sefariaRef:'Chullin 40a'}
+    ];
+    const app = {
+      currentView:'home',sessionQueue:[],currentIndex:0,currentMode:'tile',selectedTiles:[],
+      sessionStats:{reviewed:0,correct:0,newWords:0,xp:0},userWords:{},activityDays:[],
+      init(){this.loadState();this.updateHomeStats();this.renderWordLibrary();this.renderCalendar();this.setupPopupHandler();},
+      loadState(){const saved=localStorage.getItem('jewoulingo_state');if(saved){const s=JSON.parse(saved);this.userWords=s.userWords||{};this.activityDays=s.activityDays||[];this.sessionStats=s.sessionStats||{reviewed:0,correct:0,newWords:0,xp:0};}},
+      saveState(){localStorage.setItem('jewoulingo_state',JSON.stringify({userWords:this.userWords,activityDays:this.activityDays,sessionStats:this.sessionStats}));},
+      navigate(v){document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));document.getElementById(v+'-view').classList.add('active');this.currentView=v;if(v==='library')this.renderWordLibrary();if(v==='habit'){this.renderCalendar();document.getElementById('total-sentences').textContent=this.sessionStats.reviewed;}if(v==='home')this.updateHomeStats();},
+      updateHomeStats(){const known=Object.values(this.userWords).filter(w=>w.state==='solid'||w.state==='mastered').length;document.getElementById('words-known').textContent=known;document.getElementById('current-streak').textContent=this.calculateStreak();},
+      calculateStreak(){if(this.activityDays.length===0)return 0;const today=new Date().toDateString();const sorted=[...this.activityDays].sort((a,b)=>new Date(b)-new Date(a));if(sorted[0]!==today&&new Date()-new Date(sorted[0])>86400000)return 0;let streak=1;for(let i=1;i<sorted.length;i++){const prev=new Date(sorted[i-1]);const curr=new Date(sorted[i]);if(prev-curr<=86400000*1.5)streak++;else break;}return streak;},
+      startSession(){this.sessionQueue=this.generateSessionQueue();this.currentIndex=0;this.sessionStats={reviewed:0,correct:0,newWords:0,xp:0};this.navigate('session');this.renderQuestion();},
+      generateSessionQueue(){const queue=[];const shuffled=[...SENTENCES].sort(()=>Math.random()-0.5);for(let i=0;i<Math.min(5,shuffled.length);i++){queue.push({...shuffled[i],mode:this.currentMode});}return queue;},
+      setMode(mode){this.currentMode=mode;document.querySelectorAll('.mode-btn').forEach(btn=>{btn.classList.toggle('active',btn.dataset.mode===mode);});document.getElementById('tile-mode').classList.toggle('hidden',mode!=='tile');document.getElementById('free-mode').classList.toggle('hidden',mode!=='free');document.getElementById('predict-mode').classList.toggle('hidden',mode!=='predict');if(this.sessionQueue.length>0)this.renderQuestion();},
+      renderQuestion(){const item=this.sessionQueue[this.currentIndex];if(!item){this.endSession();return;}const progress=(this.currentIndex/this.sessionQueue.length)*100;document.getElementById('session-progress').style.width=progress+'%';const aramaicEl=document.getElementById('sentence-aramaic');aramaicEl.innerHTML=this.makeClickable(item.aramaic);document.getElementById('sentence-translit').textContent=item.transliteration;document.getElementById('feedback').className='feedback';document.getElementById('check-btn').disabled=false;this.selectedTiles=[];if(item.mode==='tile')this.renderTileMode(item);else if(item.mode==='free')this.renderFreeMode(item);else if(item.mode==='predict')this.renderPredictMode(item);},
+      makeClickable(text){return WORDS.reduce((acc,word)=>{const regex=new RegExp(`(${word.aramaic})`,'g');return acc.replace(regex,`<span class="clickable-word" data-word-id="${word.id}">$1</span>`);},text);},
+      setupPopupHandler(){document.addEventListener('click',(e)=>{if(e.target.classList.contains('clickable-word')){const wordId=e.target.dataset.wordId;const word=WORDS.find(w=>w.id===wordId);if(word)this.showPopup(word);}});},
+      showPopup(word){const popup=document.getElementById('word-popup');document.getElementById('popup-word').textContent=word.aramaic;document.getElementById('popup-translit').textContent=word.transliteration;document.getElementById('popup-def').textContent=word.definition;popup.classList.add('active');setTimeout(()=>popup.classList.remove('active'),5000);},
+      closePopup(){document.getElementById('word-popup').classList.remove('active');},
+      renderTileMode(item){const answerZone=document.getElementById('answer-zone');const tilesContainer=document.getElementById('tiles-container');answerZone.innerHTML='';answerZone.className='answer-zone';const words=item.translation.split(' ');const distractors=['the','and','but'];const allWords=[...words,...distractors.slice(0,2)].sort(()=>Math.random()-0.5);tilesContainer.innerHTML=allWords.map((word,i)=>`<div class="word-tile" data-index="${i}" onclick="app.selectTile(this,'${word}')">${word}</div>`).join('');},
+      selectTile(el,word){if(el.classList.contains('used'))return;el.classList.add('used');this.selectedTiles.push(word);const answerZone=document.getElementById('answer-zone');const tile=document.createElement('div');tile.className='word-tile';tile.textContent=word;tile.onclick=()=>{tile.remove();el.classList.remove('used');this.selectedTiles=this.selectedTiles.filter(w=>w!==word);};answerZone.appendChild(tile);},
+      renderFreeMode(item){const input=document.getElementById('free-type-input');input.value='';input.disabled=false;input.focus();},
+      renderPredictMode(item){const input=document.getElementById('predict-input');input.value='';input.disabled=false;input.focus();const hint=item.aramaic.split(' ').slice(0,Math.ceil(item.aramaic.split(' ').length/2)).join(' ')+' ...';document.getElementById('predict-hint').textContent='Complete: '+hint;},
+      checkAnswer(){const item=this.sessionQueue[this.currentIndex];let isCorrect=false;let userAnswer='';if(item.mode==='tile'){userAnswer=this.selectedTiles.join(' ');isCorrect=userAnswer.toLowerCase()===item.translation.toLowerCase();}else if(item.mode==='free'||item.mode==='predict'){const input=item.mode==='free'?document.getElementById('free-type-input'):document.getElementById('predict-input');userAnswer=input.value.trim();const correctWords=item.translation.toLowerCase().split(' ');const userWords=userAnswer.toLowerCase().split(' ');const matches=userWords.filter(w=>correctWords.includes(w));isCorrect=matches.length>=correctWords.length*0.7;}this.sessionStats.reviewed++;if(isCorrect){this.sessionStats.correct++;this.sessionStats.xp+=10;}this.showFeedback(isCorrect,item,userAnswer);},
+      showFeedback(isCorrect,item,userAnswer){const feedback=document.getElementById('feedback');const title=document.getElementById('feedback-title');const content=document.getElementById('feedback-content');const checkBtn=document.getElementById('check-btn');checkBtn.disabled=true;feedback.className='feedback'+(isCorrect?' correct':' incorrect');if(isCorrect){title.textContent='✓ Correct!';title.className='feedback-title feedback-correct';content.innerHTML=`<p>${item.translation}</p><p style="margin-top:8px;color:var(--success)">+10 XP</p>`;if(document.getElementById('answer-zone'))document.getElementById('answer-zone').classList.add('correct');}else{title.textContent='✗ Not quite';title.className='feedback-title feedback-incorrect';content.innerHTML=`<p>Your answer: ${userAnswer||'(empty)'}</p><p style="margin-top:8px"><strong>Correct:</strong> ${item.translation}</p>`;if(document.getElementById('answer-zone'))document.getElementById('answer-zone').classList.add('incorrect');}feedback.style.display='block';},
+      nextQuestion(){this.currentIndex++;this.renderQuestion();},
+      endSession(){this.navigate('summary');const accuracy=this.sessionStats.reviewed>0?Math.round((this.sessionStats.correct/this.sessionStats.reviewed)*100):0;document.getElementById('summary-reviewed').textContent=this.sessionStats.reviewed;document.getElementById('summary-new').textContent=this.sessionStats.newWords;document.getElementById('summary-accuracy').textContent=accuracy+'%';document.getElementById('summary-xp').textContent=this.sessionStats.xp;const today=new Date().toDateString();if(!this.activityDays.includes(today))this.activityDays.push(today);this.saveState();this.updateHomeStats();},
+      renderWordLibrary(){const list=document.getElementById('word-list');const search=document.querySelector('.search-input').value.toLowerCase();const filtered=WORDS.filter(w=>!search||w.aramaic.toLowerCase().includes(search)||w.definition.toLowerCase().includes(search)||w.transliteration.toLowerCase().includes(search));list.innerHTML=filtered.map(word=>{const userState=this.userWords[word.id]?.state||word.state;return `<div class="word-item" onclick="app.showPopup(WORDS.find(w=>w.id='${word.id}'))"><div class="word-item-aramaic hebrew">${word.aramaic}</div><div class="word-item-info"><div class="word-item-translit">${word.transliteration}</div><div class="word-item-def">${word.definition}</div></div><span class="state-badge state-${userState}">${userState}</span></div>`;}).join('');},
+      filterWords(query){this.renderWordLibrary();},
+      renderCalendar(){const grid=document.getElementById('calendar-grid');const today=new Date();const days=[];for(let i=34;i>=0;i--){const date=new Date(today);date.setDate(date.getDate()-i);const dateStr=date.toDateString();const isActive=this.activityDays.includes(dateStr);const isToday=i===0;days.push(`<div class="calendar-day${isActive?' active':''}${isToday?' today':''}" title="${dateStr}">${date.getDate()}</div>`);}grid.innerHTML=days.join('');}
+    };
+    document.addEventListener('DOMContentLoaded',()=>app.init());
+  </script>
+</body>
+</html>
